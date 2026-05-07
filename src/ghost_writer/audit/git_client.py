@@ -17,13 +17,25 @@ class GitClient:
     def get_commit_diffs(self, commit: git.Commit) -> List[Dict[str, Any]]:
         """Extract diffs for a specific commit."""
         diffs = []
-        # If it's the first commit, we diff against the empty tree
-        parent = commit.parents[0] if commit.parents else git.NULL_TREE
+        if not commit.parents:
+            # Root commit: diff against empty tree
+            diff_index = commit.diff(git.NULL_TREE, reverse=True, create_patch=True)
+        else:
+            # Normal commit: diff against first parent
+            diff_index = commit.parents[0].diff(commit, create_patch=True)
         
-        for diff in parent.diff(commit, create_patch=True):
+        for diff in diff_index:
+            diff_text = ""
+            if diff.diff:
+                try:
+                    diff_text = diff.diff.decode("utf-8", "ignore")
+                except AttributeError:
+                    # In some cases diff.diff might be a string already or other type
+                    diff_text = str(diff.diff)
+
             diffs.append({
-                "file_path": diff.b_path,
-                "diff_text": diff.diff.decode("utf-8", "ignore") if diff.diff else "",
+                "file_path": diff.b_path if diff.b_path else diff.a_path,
+                "diff_text": diff_text,
                 "is_new": diff.new_file,
                 "is_deleted": diff.deleted_file,
             })
