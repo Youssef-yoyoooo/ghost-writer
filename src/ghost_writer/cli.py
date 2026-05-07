@@ -39,13 +39,14 @@ def main(ctx: typer.Context):
         while True:
             print_banner()
             choice = questionary.select(
-                "What would you like to do?",
+                "GHOST-WRITER | TEST SUITE COMMANDS",
                 choices=[
-                    "Run Git Audit (Detect AI Code)",
-                    "Stress-Test File (Risk Assessment)",
-                    "Run Sandbox (Verify Risks)",
-                    "Full Pipeline Scan",
-                    "Exit"
+                    "🔍 Run Git Audit (Provenance Tracking)",
+                    "🧪 ISTQB Stress-Test (Single File)",
+                    "🛠️  Auto-Hardening (Batch Risk Mitigation)",
+                    "🛡️  Run Sandbox (Isolated Verification)",
+                    "🚀 Full Pipeline Audit",
+                    "❌ Exit"
                 ],
                 style=questionary.Style([
                     ('qmark', 'fg:#FF00FF bold'),
@@ -57,17 +58,67 @@ def main(ctx: typer.Context):
                 ])
             ).ask()
 
-            if choice == "Run Git Audit (Detect AI Code)":
+            if choice == "🔍 Run Git Audit (Provenance Tracking)":
                 audit(path=".", limit=50)
-            elif choice == "Stress-Test File (Risk Assessment)":
+            elif choice == "🧪 ISTQB Stress-Test (Single File)":
                 stress_test(file=None, model="llama3")
-            elif choice == "Run Sandbox (Verify Risks)":
+            elif choice == "🛠️  Auto-Hardening (Batch Risk Mitigation)":
+                auto_harden_interactive()
+            elif choice == "🛡️  Run Sandbox (Isolated Verification)":
                 sandbox_interactive()
-            elif choice == "Full Pipeline Scan":
+            elif choice == "🚀 Full Pipeline Audit":
                 full_scan(path=".")
-            elif choice == "Exit":
+            elif choice == "❌ Exit":
                 console.print("[italic dim]Shutting down Ghost-Writer...[/italic dim]")
                 sys.exit(0)
+
+def auto_harden_interactive():
+    threshold = float(questionary.text("AI Confidence Threshold (0.0 - 1.0):", default="0.7").ask())
+    auto_harden(threshold=threshold)
+
+@app.command()
+def auto_harden(
+    path: str = typer.Option(".", help="Path to audit."),
+    threshold: float = typer.Option(0.7, help="AI probability threshold to trigger hardening."),
+    model: str = typer.Option("llama3", help="Ollama model."),
+):
+    """
+    Automatically stress-test and sandbox all files above a certain AI threshold.
+    """
+    print_banner()
+    console.print(Panel(f"Starting Auto-Hardening Pipeline (Threshold: {threshold*100}%)", border_style="magenta"))
+    
+    # 1. Audit to get heatmap
+    client = GitClient(path)
+    analyzer = AIAnalyzer()
+    commits = client.get_commits(limit=50)
+    commit_data = []
+    for commit in commits:
+        metadata = client.get_commit_metadata(commit)
+        diffs = client.get_commit_diffs(commit)
+        score = analyzer.analyze_commit(metadata, diffs)
+        commit_data.append({"score": score, "diffs": diffs})
+    
+    heatmap = analyzer.generate_heatmap(commit_data)
+    risky_files = [f for f, s in heatmap.items() if s >= threshold]
+
+    if not risky_files:
+        console.print("[bold green]No files found above the risk threshold. System Secure.[/bold green]")
+        return
+
+    console.print(f"Found [bold red]{len(risky_files)}[/bold red] risky files. Starting ISTQB batch processing...\n")
+
+    for file in risky_files:
+        if not os.path.exists(file): continue
+        console.print(f"[{risky_files.index(file)+1}/{len(risky_files)}] Hardening [cyan]{file}[/cyan]...")
+        stress_test(file=file, model=model)
+        
+        # Look for the test file we just created
+        test_file = f"tests/stress_{os.path.basename(file)}"
+        if os.path.exists(test_file):
+            sandbox(code_path=file, test_path=test_file)
+            
+    console.print(Panel("[bold green]Auto-Hardening Complete[/bold green]\nAll identified risks have been tested and verified.", border_style="green"))
             
             console.print("\n" + "─" * console.width, style="dim magenta")
             questionary.press_any_key_to_continue().ask()

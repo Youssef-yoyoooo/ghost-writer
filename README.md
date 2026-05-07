@@ -14,14 +14,14 @@
 - **Phase 1: Git Provenance Tracking**: 
   - Analyzes commit velocity and metadata to distinguish between human and AI intent.
   - Generates an interactive "Heatmap" of your repository's AI density.
-- **Phase 2: Risk Assessment (The Brain)**:
-  - Leverages local LLMs (via Ollama) to peer-review AI-generated code.
-  - Automatically identifies edge cases (null pointers, race conditions, overflows).
-- **Phase 3: Automated Hardening (The Sandbox)**:
-  - Generates Pytest/Jest cases for identified risks.
-  - Executes tests in isolated Docker containers to verify code integrity.
+- **Phase 2: ISTQB-Certified Risk Assessment**:
+  - Leverages local LLMs (via Ollama) applying **Boundary Value Analysis (BVA)** and **Equivalence Partitioning (EP)**.
+  - Automatically identifies "Deceptively Simple" bugs and AI hallucinations.
+- **Phase 3: Auto-Hardening Engine**:
+  - Batch-processes risky files based on user-defined confidence thresholds.
+  - Executes ISTQB-standard tests in isolated Docker containers to verify code integrity.
 - **Phase 4: Premium Reporting**:
-  - Beautiful terminal dashboard powered by `rich`.
+  - Beautiful Warp-inspired terminal dashboard.
   - Exportable Markdown and HTML audit reports.
 
 ---
