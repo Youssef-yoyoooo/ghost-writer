@@ -50,7 +50,7 @@
 ### Setup
 
 ```bash
-git clone https://github.com/your-username/ghost-writer.git
+git clone https://github.com/Youssef-yoyoooo/ghost-writer.git
 cd ghost-writer
 pip install -e .
 ```
