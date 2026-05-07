@@ -36,36 +36,42 @@ def main(ctx: typer.Context):
     Main entry point. Shows interactive menu if no command is provided.
     """
     if ctx.invoked_subcommand is None:
-        print_banner()
-        choice = questionary.select(
-            "What would you like to do?",
-            choices=[
-                "🔍 Run Git Audit (Detect AI Code)",
-                "🧠 Stress-Test File (Risk Assessment)",
-                "🛡️  Run Sandbox (Verify Risks)",
-                "🚀 Full Pipeline Scan",
-                "❌ Exit"
-            ],
-            style=questionary.Style([
-                ('qmark', 'fg:#FF00FF bold'),
-                ('question', 'bold'),
-                ('answer', 'fg:#00FFFF bold'),
-                ('pointer', 'fg:#00FFFF bold'),
-                ('highlighted', 'fg:#00FFFF bold'),
-                ('selected', 'fg:#00FFFF'),
-            ])
-        ).ask()
+        while True:
+            print_banner()
+            choice = questionary.select(
+                "What would you like to do?",
+                choices=[
+                    "Run Git Audit (Detect AI Code)",
+                    "Stress-Test File (Risk Assessment)",
+                    "Run Sandbox (Verify Risks)",
+                    "Full Pipeline Scan",
+                    "Exit"
+                ],
+                style=questionary.Style([
+                    ('qmark', 'fg:#FF00FF bold'),
+                    ('question', 'bold'),
+                    ('answer', 'fg:#00FFFF bold'),
+                    ('pointer', 'fg:#00FFFF bold'),
+                    ('highlighted', 'fg:#00FFFF bold'),
+                    ('selected', 'fg:#00FFFF'),
+                ])
+            ).ask()
 
-        if choice == "🔍 Run Git Audit (Detect AI Code)":
-            audit()
-        elif choice == "🧠 Stress-Test File (Risk Assessment)":
-            stress_test()
-        elif choice == "🛡️  Run Sandbox (Verify Risks)":
-            sandbox_interactive()
-        elif choice == "🚀 Full Pipeline Scan":
-            full_scan()
-        else:
-            sys.exit(0)
+            if choice == "Run Git Audit (Detect AI Code)":
+                audit(path=".", limit=50)
+            elif choice == "Stress-Test File (Risk Assessment)":
+                stress_test(file=None, model="llama3")
+            elif choice == "Run Sandbox (Verify Risks)":
+                sandbox_interactive()
+            elif choice == "Full Pipeline Scan":
+                full_scan(path=".")
+            elif choice == "Exit":
+                console.print("[italic dim]Shutting down Ghost-Writer...[/italic dim]")
+                sys.exit(0)
+            
+            console.print("\n" + "─" * console.width, style="dim magenta")
+            questionary.press_any_key_to_continue().ask()
+            console.clear()
 
 @app.command()
 def audit(
