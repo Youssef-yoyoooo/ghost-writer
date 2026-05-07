@@ -15,6 +15,7 @@ setup(
         "rich",
         "pydantic",
         "python-dotenv",
+        "questionary",
     ],
     entry_points={
         "console_scripts": [
