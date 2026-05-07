@@ -61,7 +61,7 @@ pip install -e .
 
 Ghost-Writer features a **Warp-inspired interactive dashboard**. No need to memorize complex commands.
 
-### 🎮 The Dashboard
+### The Dashboard
 Simply run the helper script to enter the interactive menu:
 ```powershell
 .\ghost.ps1
@@ -69,10 +69,10 @@ Simply run the helper script to enter the interactive menu:
 
 ### Step-by-Step Pipeline:
 
-1.  **🔍 Git Audit**: Select this to scan your history. Look for files marked as **CRITICAL**.
-2.  **🧠 Stress-Test**: Pick a risky file. **Llama 3** will find logic flaws and generate Pytest cases.
-3.  **🛡️ Sandbox**: Execute those tests in an isolated **Docker container** to verify if the code breaks under pressure.
-4.  **🚀 Full Scan**: Orchestrate the entire pipeline in one go.
+1.  **Git Audit**: Select this to scan your history. Look for files marked as **CRITICAL**.
+2.  **Stress-Test**: Pick a risky file. **Llama 3** will find logic flaws and generate Pytest cases.
+3.  **Sandbox**: Execute those tests in an isolated **Docker container** to verify if the code breaks under pressure.
+4.  **Full Scan**: Orchestrate the entire pipeline in one go.
 ```bash
 ghost-writer full-scan --output report.md
 ```
