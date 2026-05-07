@@ -87,30 +87,42 @@ def audit(
 @app.command()
 def stress_test(
     file: str = typer.Option(None, "--file", "-f", help="Specific file to stress test."),
+    model: str = typer.Option("llama3", "--model", "-m", help="Ollama model to use."),
 ):
     """
     Peer-review AI hunks and generate edge-case tests.
     """
+    from ghost_writer.brain.langchain_client import BrainClient
+    
     print_banner()
     if not file:
         console.print("[bold red]Error:[/bold red] Please specify a file with --file.")
         raise typer.Exit(code=1)
+    
+    if not os.path.exists(file):
+        console.print(f"[bold red]Error:[/bold red] File [cyan]{file}[/cyan] does not exist.")
+        raise typer.Exit(code=1)
         
     console.print(f"\n[bold yellow]Brain Phase:[/bold yellow] Assessing [cyan]{file}[/cyan]\n")
     
-    with console.status("[bold green]Consulting Ollama (Llama 3)...") as status:
-        import time
-        time.sleep(2)
+    try:
+        with open(file, "r", encoding="utf-8") as f:
+            code_content = f.read()
+    except Exception as e:
+        console.print(f"[bold red]Error reading file:[/bold red] {str(e)}")
+        raise typer.Exit(code=1)
+
+    brain = BrainClient(model=model)
+    with console.status(f"[bold green]Consulting Ollama ({model})...") as status:
+        analysis = brain.analyze_code(code_content, file)
         
     console.print(Panel(
-        "[bold cyan]Identified Risks:[/bold cyan]\n"
-        "1. [yellow]Potential Null Pointer[/yellow] in process_data()\n"
-        "2. [yellow]Unbounded Recursion[/yellow] in fetch_recursive()\n",
-        title="QA Insights",
+        analysis,
+        title="[bold cyan]QA Engineer Insights[/bold cyan]",
         border_style="cyan"
     ))
     
-    console.print("[bold green]Tests generated.[/bold green] Ready for Sandbox execution.")
+    console.print("\n[bold green]Tests generated.[/bold green] Use `sandbox` to execute them.")
 
 @app.command()
 def sandbox(
